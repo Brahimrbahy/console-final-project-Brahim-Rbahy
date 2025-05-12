@@ -8,34 +8,42 @@
 // - Minimum of 10 commits 
 // - Deadline: One day 
 // - Use of object classes, arrays, functions, prompts, etc.
-
+let users = [];
 
 class User {
-    constructor(name, email, age, password) {
-      this.name = name;
-      this.email = email;
-      this.age = age;
-      this.password = password;
+    constructor(name, email, password) {
+        this.name = name;
+        this.email = email.toLowerCase();
+        this.password = password;
+        this.balance = 1000;
+        this.history = [];
     }
 }
-let name = prompt("Enter full name:").trim();
-let email = prompt("Enter email:").trim().toLowerCase();
-let age = Number(prompt("Enter age:").trim());
-let password = prompt("Enter password:").trim();
-let confirm = prompt("Confirm password:").trim();
 
-let infos = {
-  name: name,
-  email: email,
-  age: age,
-  password: password,
-  confirm: confirm
-};
 
-console.log(infos);
+
+
+
 
 // ## 2 - Project Objective:
 // - Create a JavaScript program that simulates logging into a bank account using only the console to interact with the user.
+function Menu() {
+    let choice = prompt("Ckhtar:\n1 - Sign Up\n2 - Log In\n3 - Change Password\nexit - Exit");
+    if (choice === "1") 
+        signup();
+    else if (choice === "2") 
+        login();
+    else if (choice === "3") 
+        changePassword();
+    else if (choice === "exit") 
+        alert("sir f7alk ");
+    else {
+        alert("m dkhlty wlo 3wd");
+        Menu();
+    }
+}
+
+
 
 // ## 3 - Instructions:
 // - Account Creation and Management:
