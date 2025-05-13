@@ -1,16 +1,17 @@
 let users = [];
 
 class User {
-    constructor(name, email, password) {
+    constructor(name, email, age, password) {
         this.name = name;
         this.email = email.toLowerCase();
+        this.age = age;
         this.password = password;
-        this.balance = 1000;
+        this.balance = 0;
         this.history = [];
+        this.loan = 0;
+        this.investment = 0;
     }
 }
-
-
 
 function mainMenu() {
     let choice = prompt("Choose an option:\n1 - Sign Up\n2 - Log In\n3 - Change Password\nexit - Exit");
@@ -26,50 +27,51 @@ function mainMenu() {
 }
 
 function signUp() {
-    let name = prompt("Enter your name:");
-    let email = prompt("Enter your email:");
-    let password = prompt("Create a password:");
+    let name = prompt("Enter your full name:").trim();
 
-    if (users.find(function(user) { return user.email === email.toLowerCase(); })) {
-        alert("Email already in use.");
-        mainMenu();
-        return;
+    if (name.length < 5) {
+        alert("Invalid name format.");
+        return mainMenu();
     }
 
-    let user = new User(name, email, password);
-    users.push(user);
-    alert("Registration successful!");
-    mainMenu();
-}
-
-
-function signUp() {
-    let name = prompt("Enter your name:");
-    let email = prompt("Enter your email:");
-    let password = prompt("Create a password:");
-
-    if (users.find(function(user) { return user.email === email.toLowerCase(); })) {
-        alert("Email already in use.");
-        mainMenu();
-        return;
+    let email = prompt("Enter your email:").trim().toLowerCase();
+    if (email.includes(" ") || !email.includes("@") ||users.find(u => u.email === email)) {
+        alert("Invalid or duplicate email.");
+        return mainMenu();
     }
 
-    let user = new User(name, email, password);
-    users.push(user);
-    alert("Registration successful!");
+    let age = prompt("Enter your age:");
+    if (!/^\d{1,2}$/.test(age)) {
+        alert("Invalid age.");
+        return mainMenu();
+    }
+
+    let password = prompt("Create a password:").trim();
+    if (!/[!@#\-\+\*\/]/.test(password)) {
+        alert("Password must be at least 7 characters and contain a special character.");
+        return mainMenu();
+    }
+
+    let confirmPassword = prompt("Confirm your password:");
+    if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return mainMenu();
+    }
+
+    let newUser = new User(name, email, age, password);
+    users.push(newUser);
+    alert("successful!");
     mainMenu();
 }
-
 
 function logIn() {
-    let email = prompt("Enter your email:").toLowerCase();
+    let email = prompt("Enter your email:").trim().toLowerCase();
     let password = prompt("Enter your password:");
 
-    let foundUser = users.find(user => user.email === email && user.password === password);
-
-    if (foundUser) {
-        alert("Welcome "+foundUser.name);
-        userActions(foundUser);
+    let user = users.find(u => u.email === email && u.password === password);
+    if (user) {
+        alert("Login successful.");
+        userActions(user);
     } else {
         alert("Incorrect email or password.");
         mainMenu();
@@ -77,53 +79,40 @@ function logIn() {
 }
 
 function changePassword() {
-    let email = prompt("Enter your registered email:").toLowerCase();
-    let user = users.find(user => user.email === email);
+    let email = prompt("Enter your registered email:").trim().toLowerCase();
+    let user = users.find(u => u.email === email);
 
-    if (user) {
-        let newPassword = prompt("Enter new password:");
-        user.password = newPassword;
-        alert("Password changed successfully.");
-    } else {
-        alert("User not found.");
+    if (!user) {
+        alert("Email not found.");
+        return mainMenu();
     }
 
+    let newPassword = prompt("Enter new password:").trim();
+    if (!/[!@#\-\+\*\/]/.test(newPassword)) {
+        alert("Password must be at least 7 characters and contain a special character.");
+        return mainMenu();
+    }
+
+    let confirmPassword = prompt("Confirm new password:");
+    if (newPassword !== confirmPassword) {
+        alert("Passwords do not match.");
+        return mainMenu();
+    }
+
+    user.password = newPassword;
+    alert("Password changed successfully.");
     mainMenu();
 }
 
 function userActions(user) {
-    let choice = prompt(user.name+" your balance is: ${user.balance} DH\nChoose:\n1 - Withdraw\n2 - Deposit\n3 - View Balance\n4 - View History\n5 - Log Out");
-
-    if (choice === "1") {
-        let amount = parseFloat(prompt("How much do you want to withdraw?"));
-        if (amount > user.balance) alert("Insufficient balance.");
-        else {
-            user.balance -= amount;
-            user.history.push("ithdraw: - "amount);
-            alert("Withdrawal successful.");
-        }
-    } else if (choice === "2") {
-        let amount = parseFloat(prompt("How much do you want to deposit?"));
-        if (amount > 1000) alert("Cannot deposit more than 1000 DH.");
-        else {
-            user.balance += amount;
-            user.history.push("Deposit: + "amount);
-            alert("Deposit successful.");
-        }
-    } else if (choice === "3") {
-        alert("Your current balance is: "+ user.balance+ "DH");
-    } else if (choice === "4") {
-        if (user.history.length === 0) alert("No transactions yet.");
-        else alert("Transaction History:\n" + user.history.join("\n"));
-    } else if (choice === "5") {
-        alert("Logged out.");
-        mainMenu();
-        return;
-    } else {
-        alert("Invalid choice.");
+    if (user.loan > 0) {
+        let deduction = user.loan * 0.10;
+        user.balance -= deduction;
+        user.loan -= deduction;
+        user.history.push("Loan deduction: -" + deduction.toFixed(2));
     }
 
-    userActions(user);
+
 }
 
 mainMenu();
