@@ -41,7 +41,7 @@ function signUp() {
     }
 
     let age = prompt("Enter your age:");
-    if (!/^\d{1,2}$/.test(age)) {
+    if (age != Number) {
         alert("Invalid age.");
         return mainMenu();
     }
